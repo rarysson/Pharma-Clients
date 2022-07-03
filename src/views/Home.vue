@@ -20,7 +20,9 @@
           <td class="capitalize-text text-center">{{ client.gender }}</td>
           <td class="text-center">{{ client.birthday }}</td>
           <td class="text-center">
-            <button class="view-info-btn">View</button>
+            <button class="view-info-btn" @click="viewClientInfo(client)">
+              View
+            </button>
           </td>
         </tr>
       </tbody>
@@ -30,6 +32,12 @@
       v-if="formattedClients.length && isFetchingData"
       message="Loading more"
     />
+
+    <ClientInfoModal
+      :open="openModal"
+      :clientData="currentClient"
+      @close="openModal = false"
+    />
   </div>
 </template>
 
@@ -37,6 +45,7 @@
 import { mapState, mapActions, mapGetters } from "vuex";
 
 import Loading from "../components/Loading.vue";
+import ClientInfoModal from "../components/ClientInfoModal.vue";
 
 let idDebounce;
 
@@ -45,6 +54,14 @@ export default {
 
   components: {
     Loading,
+    ClientInfoModal,
+  },
+
+  data() {
+    return {
+      openModal: false,
+      currentClient: {},
+    };
   },
 
   computed: {
@@ -66,6 +83,11 @@ export default {
           this.fetchClients();
         }
       }, 250);
+    },
+
+    viewClientInfo(client) {
+      this.currentClient = client;
+      this.openModal = true;
     },
   },
 
