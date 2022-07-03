@@ -101,7 +101,7 @@ export default {
   background: radial-gradient(circle, white 0%, #ecf0f1 100%);
   height: 500px;
   margin: 10px;
-  width: 500px;
+  width: 525px;
   padding: 25px;
   transition: all 0.3s;
 }

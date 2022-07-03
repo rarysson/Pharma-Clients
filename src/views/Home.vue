@@ -52,6 +52,18 @@ let idDebounce;
 export default {
   name: "Home",
 
+  props: {
+    pageNumber: {
+      type: [Number, String],
+      default: 1,
+    },
+
+    userId: {
+      type: String,
+      default: "",
+    },
+  },
+
   components: {
     Loading,
     ClientInfoModal,
@@ -91,10 +103,18 @@ export default {
     },
   },
 
-  beforeMount() {
-    this.fetchClients();
-
+  async beforeMount() {
     document.addEventListener("scroll", this.handleAppScroll);
+
+    if (this.userId) {
+      await this.fetchClients(+this.pageNumber);
+
+      const client = this.formattedClients.find((c) => c.id === this.userId);
+      this.currentClient = client ? client : {};
+      this.openModal = !!client;
+    } else {
+      await this.fetchClients();
+    }
   },
 
   beforeDestroy() {

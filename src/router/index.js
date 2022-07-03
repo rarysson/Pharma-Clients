@@ -10,6 +10,11 @@ const routes = [
     name: "Home",
     component: Home,
   },
+  {
+    path: "/:pageNumber/:userId",
+    component: Home,
+    props: true,
+  },
 ];
 
 const router = new VueRouter({
