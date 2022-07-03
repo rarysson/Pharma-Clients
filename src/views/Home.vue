@@ -1,11 +1,13 @@
 <template>
   <div @scroll="handleAppScroll">
     <Loading
-      v-if="!formattedClients.length && isFetchingData"
+      v-if="!clients.length && isFetchingData"
       message="Fetching clients"
     />
 
-    <table v-if="formattedClients.length">
+    <SearchBar style="margin-bottom: 25px" @search="search = $event" />
+
+    <table v-if="clients.length">
       <thead>
         <tr>
           <th>Name</th>
@@ -15,7 +17,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="client in formattedClients" :key="client.id">
+        <tr v-for="client in clients" :key="client.id">
           <td>{{ client.name }}</td>
           <td class="capitalize-text text-center">{{ client.gender }}</td>
           <td class="text-center">{{ client.birthday }}</td>
@@ -27,11 +29,11 @@
         </tr>
       </tbody>
     </table>
+    <div v-else-if="!isFetchingData" class="text-center">
+      <strong style="font-size: 20px">No clients!</strong>
+    </div>
 
-    <Loading
-      v-if="formattedClients.length && isFetchingData"
-      message="Loading more"
-    />
+    <Loading v-if="clients.length && isFetchingData" message="Loading more" />
 
     <ClientInfoModal
       :open="openModal"
@@ -46,6 +48,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 
 import Loading from "../components/Loading.vue";
 import ClientInfoModal from "../components/ClientInfoModal.vue";
+import SearchBar from "../components/SearchBar.vue";
 
 let idDebounce;
 
@@ -67,18 +70,26 @@ export default {
   components: {
     Loading,
     ClientInfoModal,
+    SearchBar,
   },
 
   data() {
     return {
       openModal: false,
       currentClient: {},
+      search: "",
     };
   },
 
   computed: {
     ...mapState(["isFetchingData"]),
     ...mapGetters(["formattedClients"]),
+
+    clients() {
+      return this.formattedClients.filter((client) =>
+        client.name.toLowerCase().includes(this.search)
+      );
+    },
   },
 
   methods: {
