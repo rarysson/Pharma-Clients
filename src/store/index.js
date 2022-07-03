@@ -51,6 +51,7 @@ export default new Vuex.Store({
       const getPage = (index) => {
         return Math.floor((index + 1) / 50) + 1;
       };
+
       return clients.map((client, index) => ({
         id: client.login.uuid,
         img: client.picture.large,

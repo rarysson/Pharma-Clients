@@ -1,5 +1,5 @@
 <template>
-  <div @scroll="handleAppScroll">
+  <div>
     <Loading
       v-if="!clients.length && isFetchingData"
       message="Fetching clients"
