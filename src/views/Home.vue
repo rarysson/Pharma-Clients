@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <div v-if="!formattedClients.length && isFetchingData" class="text-center">
-      <p>Fetching clients...</p>
-    </div>
+  <div @scroll="handleAppScroll">
+    <Loading
+      v-if="!formattedClients.length && isFetchingData"
+      message="Fetching clients"
+    />
 
     <table v-if="formattedClients.length">
       <thead>
@@ -24,14 +25,27 @@
         </tr>
       </tbody>
     </table>
+
+    <Loading
+      v-if="formattedClients.length && isFetchingData"
+      message="Loading more"
+    />
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
 
+import Loading from "../components/Loading.vue";
+
+let idDebounce;
+
 export default {
   name: "Home",
+
+  components: {
+    Loading,
+  },
 
   computed: {
     ...mapState(["isFetchingData"]),
@@ -40,10 +54,29 @@ export default {
 
   methods: {
     ...mapActions(["fetchClients"]),
+
+    handleAppScroll() {
+      clearTimeout(idDebounce);
+
+      idDebounce = setTimeout(() => {
+        const reachedEnd =
+          window.innerHeight + window.scrollY === document.body.scrollHeight;
+
+        if (reachedEnd) {
+          this.fetchClients();
+        }
+      }, 250);
+    },
   },
 
   beforeMount() {
     this.fetchClients();
+
+    document.addEventListener("scroll", this.handleAppScroll);
+  },
+
+  beforeDestroy() {
+    document.body.removeEventListener("scroll", this.handleAppScroll);
   },
 };
 </script>
